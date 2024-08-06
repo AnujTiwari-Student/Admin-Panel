@@ -11,7 +11,7 @@ function SignIn() {
         </SignedIn>
 
         <SignedOut>
-          <Button asChild variant="default">
+          <Button asChild variant="outline">
             <SignInButton />
           </Button>
         </SignedOut>
