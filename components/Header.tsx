@@ -13,7 +13,7 @@ interface MenuItem {
 
 const menu: MenuItem[] = [
     { name: 'Home', icon: Home, href: '/' },
-    { name: 'Master', icon: Filter, href: '/filter' },
+    // { name: 'Master', icon: Filter, href: '/filter' },
     { name: 'About', icon: CircleHelp, href: '/about' },
 ]
 
@@ -35,7 +35,7 @@ function Header() {
                 {menu.map((option) => (
                     <nav key={option.name} className='flex flex-col'>
                         <div
-                            className={`flex space-x-4 mt-4 px-8 py-2 rounded-xl mx-4 cursor-pointer  hover:bg-gray-300 ${option.name === 'Home' ? 'bg-blue-600 text-white hover:bg-blue-600' : ''}`}
+                            className={`flex space-x-4 mt-4 px-8 py-2 rounded-xl mx-4 cursor-pointer  hover:bg-gray-300 ${option.name === 'Home' ? 'bg-blue-600 text-white hover:text-black' : ''}`}
                         >
                             <option.icon />
                             <p>{option.name}</p>
@@ -64,7 +64,7 @@ function Header() {
                     {menu.map((option) => (
                         <nav key={option.name} className='flex flex-col'>
                             <div
-                                className={`flex space-x-4 mt-4 px-8 py-2 rounded-xl mx-4 cursor-pointer hover:bg-gray-300 ${option.name === 'Home' ? 'bg-blue-600 text-white hover:bg-blue-600' : ''}`}
+                                className={`flex space-x-4 mt-4 px-8 py-2 rounded-xl mx-4 cursor-pointer hover:bg-gray-300 ${option.name === 'Home' ? 'bg-blue-600 text-white hover:text-black' : ''}`}
                             >
                                 <option.icon />
                                 <p>{option.name}</p>

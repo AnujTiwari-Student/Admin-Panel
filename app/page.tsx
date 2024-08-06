@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
 interface Banner {
@@ -13,33 +14,71 @@ interface Banner {
 }
 
 const AdminPage: React.FC = () => {
-    const [banners, setBanners] = useState<Banner[]>([]);
-    const [editingId, setEditingId] = useState<number | null>(null);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [image, setImage] = useState('');
+  const [createdBy, setCreatedBy] = useState('');
+  const [userId, setUserId] = useState('');
+  const [companyId, setCompanyId] = useState('');
+  const [editingId, setEditingId] = useState<number | null>(null);
 
-    const fetchBanners = async () => {
-        try {
-            const response = await fetch('https://external-api.com/banners');
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
-            setBanners(data);
-        } catch (error) {
-            console.error('Failed to fetch banners:', error);
-        }
-    };
+  const fetchBanners = async () => {
+      const response = await fetch('/api/banners');
+      const data = await response.json();
+      setBanners(data);
+  };
 
-    const handleEdit = (banner: Banner) => {
-        setEditingId(banner.Id);
-    };
+  const handleAddOrUpdate = async () => {
+      const method = editingId ? 'PUT' : 'POST';
+      const response = await fetch('/api/banners', {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              id: editingId,
+              title,
+              description,
+              image,
+              createdBy,
+              userId,
+              companyId,
+          }),
+      });
+      if (response.ok) {
+          setTitle('');
+          setDescription('');
+          setImage('');
+          setCreatedBy('');
+          setUserId('');
+          setCompanyId('');
+          setEditingId(null);
+          fetchBanners();
+      }
+  };
 
-    const handleDelete = async (id: number) => {
-        console.log(`Delete banner with id: ${id}`);
-    };
+  const handleEdit = (banner: Banner) => {
+      setTitle(banner.Title);
+      setDescription(banner.Description);
+      setImage(banner.Image);
+      setCreatedBy(banner.CreatedBy);
+      setUserId(banner.UserId);
+      setCompanyId(banner.CompanyId);
+      setEditingId(banner.Id);
+  };
 
-    useEffect(() => {
-        fetchBanners();
-    }, []);
+  const handleDelete = async (id: number) => {
+      await fetch('/api/banners', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+      });
+      fetchBanners();
+  };
+
+  useEffect(() => {
+      fetchBanners();
+  }, []);
+
 
     return (
         <main>
@@ -49,7 +88,7 @@ const AdminPage: React.FC = () => {
                     <li key={banner.Id}>
                         <h2>{banner.Title}</h2>
                         <p>{banner.Description}</p>
-                        <img src={banner.Image} alt={banner.Title} />
+                        <Image src={banner.Image} alt={banner.Title} />
                         <p>Created By: {banner.CreatedBy}</p>
                         <p>User ID: {banner.UserId}</p>
                         <p>Company ID: {banner.CompanyId}</p>

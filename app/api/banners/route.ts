@@ -1,39 +1,58 @@
-'use server'
-
+import { NextResponse } from 'next/server';
 import sql from 'mssql';
-import dotenv from 'dotenv';
 
-
-dotenv.config();
-
-const config = {
-    connectionString: process.env.DB_CONNECTION_STRING,
+const config: sql.config = {
+    user: process.env.DB_USER as string,
+    password: process.env.DB_PASSWORD as string,
+    server: process.env.DB_SERVER as string,
+    database: process.env.DB_DATABASE as string,
+    options: {
+        encrypt: true,
+        trustServerCertificate: true
+    }
 };
 
-export default async function handler(req, res) {
+export async function GET() {
     try {
-        await sql.connect(config); 
+        const pool = await sql.connect(config);
+        const result = await pool.request().query('SELECT * FROM Banners WHERE IsDeleted = 0');
+        return NextResponse.json(result.recordset);
+    } catch (err) {
+        return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    }
+}
 
-        if (req.method === 'GET') {
-            const result = await sql.query`SELECT * FROM Banners WHERE IsDeleted = 0`;
-            res.status(200).json(result.recordset);
-        } else if (req.method === 'POST') {
-            const { title, description, image, createdBy, userId, companyId } = req.body;
-            await sql.query`INSERT INTO Banners (Title, Description, Image, IsActive, IsDeleted, CreatedBy, UserId, CompanyId) VALUES (${title}, ${description}, ${image}, 1, 0, ${createdBy}, ${userId}, ${companyId})`;
-            res.status(201).json({ message: 'Banner added successfully' });
-        } else if (req.method === 'PUT') {
-            const { id, title, description, image, modifiedBy } = req.body;
-            await sql.query`UPDATE Banners SET Title = ${title}, Description = ${description}, Image = ${image}, ModifiedBy = ${modifiedBy}, ModifiedOn = GETDATE() WHERE Id = ${id}`;
-            res.status(200).json({ message: 'Banner updated successfully' });
-        } else if (req.method === 'DELETE') {
-            const { id } = req.body;
-            await sql.query`UPDATE Banners SET IsDeleted = 1 WHERE Id = ${id}`;
-            res.status(204).json({ message: 'Banner deleted successfully' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    } finally {
-        await sql.close();
+export async function POST(request: Request) {
+    try {
+        const { title, description, image, createdBy, userId, companyId } = await request.json();
+        const pool = await sql.connect(config);
+        const query = `INSERT INTO Banners (Title, Description, Image, IsActive, IsDeleted, CreatedBy, CreatedOn, UserId, CompanyId) 
+                       VALUES (@title, @description, @image, 1, 0, @createdBy, GETDATE(), @userId, @companyId)`;
+
+        await pool.request()
+            .input('title', sql.NVarChar, title)
+            .input('description', sql.NVarChar, description)
+            .input('image', sql.NVarChar, image)
+            .input('createdBy', sql.NVarChar, createdBy)
+            .input('userId', sql.Int, userId)
+            .input('companyId', sql.Int, companyId)
+            .query(query);
+
+        return NextResponse.json({ message: 'Banner created successfully' }, { status: 201 });
+    } catch (err) {
+        return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        const { id } = await request.json();
+        const pool = await sql.connect(config);
+        await pool.request()
+            .input('id', sql.Int, id)
+            .query('UPDATE Banners SET IsDeleted = 1 WHERE Id = @id');
+        return NextResponse.json({ message: 'Banner deleted successfully' });
+    } catch (err) {
+        return NextResponse.json({ error: (err as Error).message }, { status: 500 });
     }
 }
