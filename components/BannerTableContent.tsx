@@ -9,6 +9,14 @@ import {
     TableRow,
   } from "@/components/ui/table"
 
+  
+import image from '../assets/MainAfter.webp'
+import Image from 'next/image'
+
+const img = [
+    { id: 1, name: 'Image 1', url: image }
+]
+
 function BannerTableContent() {
   return (
     <div>
@@ -29,11 +37,13 @@ function BannerTableContent() {
                 <TableRow>
                   <TableCell className="font-medium">Title</TableCell>
                   <TableCell>Description</TableCell>
-                  <TableCell>Image</TableCell>
+                  <TableCell>
+                    <Image src={img[0].url} alt={img[0].name} className="w-12 h-12" />
+                  </TableCell>
                   <TableCell className="text-right">Anuj</TableCell>
                   <TableCell className="text-right">1</TableCell>
                   <TableCell className="text-right">1</TableCell>
-                  <TableCell className="text-right">Anuj</TableCell>
+                  <TableCell className="text-right">---</TableCell>
                 </TableRow>
               </TableBody>
         </Table>
