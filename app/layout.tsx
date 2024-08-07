@@ -19,15 +19,15 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="min-h-screen overflow-x-hidden bg-[#efeff8]">
+        <body className="min-h-screen flex flex-col overflow-x-hidden bg-[#efeff8]">
 
           <header>
             <Header />
           </header>
 
-          <div>
+          <div className="flex-1 w-full">
             <main>
-              {children}
+               {children}
             </main>
           </div>
         </body>
