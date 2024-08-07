@@ -1,6 +1,6 @@
 'use client'
 
-import Table from '@/components/Table';
+import BannerTable from '@/components/BannerTable';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
@@ -91,7 +91,7 @@ const AdminPage: React.FC = () => {
             </section>
 
             <section className='lg:mx-64'>
-                <Table />
+                <BannerTable/>
             </section>
 
         </div>
