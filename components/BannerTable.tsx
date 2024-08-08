@@ -3,14 +3,24 @@
 import { Download } from 'lucide-react';
 import React, { useState } from 'react';
 import BannerTableContent from './BannerTableContent';
-import image from '../assets/MainAfter.webp'
+
+interface Banner {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: any;
+  createdBy: string;
+  userId: number;
+  companyId: number;
+  modifiedBy: string;
+}
 
 const data: Banner[] = [
   {
     id: 1,
     title: 'Title',
     description: 'Description',
-    imageUrl: image, // Replace with actual image URL
+    imageUrl: 'https://res.cloudinary.com/depos9mqy/image/upload/v1723097244/MainAfter_azxi79.webp' ,
     createdBy: 'Anuj',
     userId: 1,
     companyId: 1,
@@ -33,7 +43,7 @@ const BannerTable: React.FC = () => {
   };
 
 
-  const exportToCSV = (data: any[], filename: string): void => {
+  const exportToCSV = (data: Banner[], filename: string): void => {
     const csvData = data.map((row) =>
       [row.title, row.description, row.imageUrl, row.createdBy, row.userId, row.companyId, row.modifiedBy].join(',')
     );
