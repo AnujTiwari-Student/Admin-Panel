@@ -10,14 +10,22 @@ import {
   } from "@/components/ui/table"
 
   
-import image from '../assets/MainAfter.webp'
 import Image from 'next/image'
 
-const img = [
-    { id: 1, name: 'Image 1', url: image }
-]
+type BannerTableContentProps = {
+    data: {
+      id: number;
+      title: string;
+      description: string;
+      imageUrl: string;
+      createdBy: string;
+      userId: number;
+      companyId: number;
+      modifiedBy: string;
+    }[];
+  };
 
-function BannerTableContent() {
+  const BannerTableContent: React.FC<BannerTableContentProps> = ({ data }) => {
   return (
     <div>
         <Table>
@@ -34,7 +42,7 @@ function BannerTableContent() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
+                {/* <TableRow>
                   <TableCell className="font-medium">Title</TableCell>
                   <TableCell>Description</TableCell>
                   <TableCell>
@@ -44,7 +52,20 @@ function BannerTableContent() {
                   <TableCell className="text-right">1</TableCell>
                   <TableCell className="text-right">1</TableCell>
                   <TableCell className="text-right">---</TableCell>
-                </TableRow>
+                </TableRow> */}
+                {data.map((item) => (
+                    <TableRow key={item.id}>
+                    <TableCell className="font-medium">{item.title}</TableCell>
+                    <TableCell>{item.description}</TableCell>
+                    <TableCell>
+                        <Image src={item.imageUrl} alt={item.title} className='w-12 h-12' />
+                    </TableCell>
+                    <TableCell className="text-right">{item.createdBy}</TableCell>
+                    <TableCell className="text-right">{item.userId}</TableCell>
+                    <TableCell className="text-right">{item.companyId}</TableCell>
+                    <TableCell className="text-right">{item.modifiedBy}</TableCell>
+                    </TableRow>
+                ))}
               </TableBody>
         </Table>
     </div>
