@@ -1,13 +1,44 @@
-import mysql from 'mysql2/promise';
+import { ConnectionPool, config as SqlConfig } from 'mssql';
+import sql from 'mssql';
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
+export async function query(sqlText: string, parameters: any) {
+  const config: SqlConfig = {
+    user: process.env.DB_USER || '',
+    password: process.env.DB_PASSWORD || '',
+    server: process.env.DB_SERVER || '',
+    database: process.env.DB_DATABASE || '',
+    options: {
+      encrypt: true, 
+      trustServerCertificate: true 
+    }
+  };
 
-export async function query(sql: string, values: any[]) {
-  const [rows] = await pool.execute(sql, values);
-  return rows;
+  if (!config.user || !config.password || !config.server || !config.database) {
+    throw new Error('Database configuration is incomplete.');
+  }
+
+  const pool = new ConnectionPool(config);
+
+  try {
+    await pool.connect();
+    const request = pool.request();
+
+    // Add parameters with type
+    if (parameters) {
+      for (const [key, value] of Object.entries(parameters)) {
+        if (value && value.value !== undefined) {
+          request.input(key, value.type, value.value);
+        } else {
+          throw new Error(`Parameter ${key} is undefined or has no value.`);
+        }
+      }
+    }
+
+    const result = await request.query(sqlText);
+    return result;
+  } catch (error) {
+    throw new Error(`SQL query error: ${error.message}`);
+  } finally {
+    await pool.close();
+  }
 }

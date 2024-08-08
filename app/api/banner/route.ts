@@ -1,13 +1,8 @@
 import { NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
+import cloudinary from '../utils/cloudinary';
 import { query } from '../utils/db';
 import { Readable } from 'stream';
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import sql from 'mssql';
 
 export async function POST(req: Request) {
   try {
@@ -15,7 +10,6 @@ export async function POST(req: Request) {
     console.log('FormData entries:', [...formData.entries()]);
 
     const imageFile = formData.get('image') as File;
-
     if (!imageFile) {
       throw new Error('No file selected');
     }
@@ -54,24 +48,35 @@ export async function POST(req: Request) {
     const modifiedBy = formData.get('modifiedBy') as string;
 
     const insertQuery = `
-      INSERT INTO banners (title, description, image_url, created_by, user_id, company_id, modified_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO Banners (Title, Description, Image, CreatedBy, UserId, CompanyId, ModifiedBy)
+      VALUES (@title, @description, @image, @createdBy, @userId, @companyId, @modifiedBy);
     `;
-    const result = await query(insertQuery, [title, description, imageUrl, createdBy, userId, companyId, modifiedBy]);
 
-    if (!result || result.affectedRows === undefined) {
-      throw new Error('Data insertion failed or affectedRows not available');
-    }
+    const parameters = {
+      title: { type: sql.NVarChar, value: title },
+      description: { type: sql.NVarChar, value: description },
+      image: { type: sql.NVarChar, value: imageUrl },
+      createdBy: { type: sql.NVarChar, value: createdBy },
+      userId: { type: sql.NVarChar, value: userId },
+      companyId: { type: sql.NVarChar, value: companyId },
+      modifiedBy: { type: sql.NVarChar, value: modifiedBy }
+    };
+
+    const result = await query(insertQuery, parameters);
 
     console.log('Database insert result:', result);
 
-    return NextResponse.json({
-      message: 'Banner created successfully',
-      imageUrl: imageUrl,
-      sqlStatus: 'Data inserted successfully',
-    });
+    if (result && result.recordset && result.recordset.length > 0) {
+      return NextResponse.json({
+        message: 'Banner created successfully',
+        imageUrl: imageUrl,
+        sqlStatus: 'Data inserted successfully',
+      });
+    } else {
+      throw new Error('Data insertion failed');
+    }
   } catch (error) {
     console.error('Error:', error);
-    return NextResponse.json({ message: 'Failed to create banner', error: error.message }, { status: 500 });
+    return NextResponse.json({ message: 'Failed to create banner', error }, { status: 500 });
   }
 }

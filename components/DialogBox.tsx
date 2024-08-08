@@ -43,7 +43,6 @@ function DialogBox() {
     Object.entries(formData).forEach(([key, value]) => {
       formDataToSend.append(key, value);
     });
-    // console.log([...formData.entries()]);
 
 
     try {
