@@ -66,7 +66,7 @@ const BannerTable: React.FC = () => {
     <div className="mx-10 lg:w-full overflow-x-hidden">
       <div className="flex justify-between">
         <div className="flex">
-          <button className="flex bg-gray-400 px-6 py-2 rounded-lg" onClick={handleExport}>
+          <button className="flex bg-gray-300 px-6 py-2 rounded-lg" onClick={handleExport}>
             <Download className="mr-2" /> Export
           </button>
         </div>
