@@ -29,7 +29,6 @@ type BannerTableContentProps = {
   return (
     <div>
         <Table>
-              {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[100px]">Title</TableHead>
@@ -50,8 +49,8 @@ type BannerTableContentProps = {
                         <Image 
                             src={item.imageUrl} 
                             alt={item.title} 
-                            width={48} // specify the width
-                            height={48} // specify the height
+                            width={48}
+                            height={48}
                             className="w-12 h-12" 
                         />
                     </TableCell>

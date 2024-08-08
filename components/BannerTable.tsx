@@ -3,6 +3,7 @@
 import { Download } from 'lucide-react';
 import React, { useState } from 'react';
 import BannerTableContent from './BannerTableContent';
+import DialogBox from './DialogBox';
 
 interface Banner {
   id: number;
@@ -26,16 +27,20 @@ const data: Banner[] = [
     companyId: 1,
     modifiedBy: '---',
   },
+  {
+    id: 1,
+    title: 'Title',
+    description: 'Description',
+    imageUrl: 'https://res.cloudinary.com/depos9mqy/image/upload/v1723097244/MainAfter_azxi79.webp' ,
+    createdBy: 'Anuj',
+    userId: 1,
+    companyId: 1,
+    modifiedBy: '---',
+  },
   // Add more rows as needed
 ];
 
 const BannerTable: React.FC = () => {
-  const [isPostFormOpen, setIsPostFormOpen] = useState<boolean>(false);
-
-  const handleClick = (): void => {
-    console.log("Button clicked");
-    setIsPostFormOpen(!isPostFormOpen);
-  };
 
   const handleExport = (): void => {
     console.log("Export button clicked");
@@ -70,9 +75,7 @@ const BannerTable: React.FC = () => {
             placeholder="Search Banner"
             className="hidden xl:block py-2 px-12 rounded-lg shadow-xl"
           />
-          <button className="py-2 px-6 bg-blue-600 rounded-lg" onClick={handleClick}>
-            Create Banner
-          </button>
+          <DialogBox />
         </div>
       </div>
       <div className="my-10 border border-gray-300">
