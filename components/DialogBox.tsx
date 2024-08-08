@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
@@ -14,15 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface FormField {
-  id: string;
-  label: string;
-  type: string;
-  defaultValue?: string;
-  accept?: string;
-}
-
-const formFields: FormField[] = [
+const formFields = [
   { id: "title", label: "Title", type: "text", defaultValue: "Rent" },
   { id: "description", label: "Description", type: "text", defaultValue: "For rent a vehicle" },
   { id: "image", label: "Select Image", type: "file", accept: "image/*" },
@@ -33,43 +25,42 @@ const formFields: FormField[] = [
 ];
 
 function DialogBox() {
+  const [formData, setFormData] = useState<Record<string, string | File>>({});
 
-    const [formData , setFormData] = useState<Record<string , string | File>>({});
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: files ? files[0] : value,
+    }));
+  };
 
-    const handleChange = ( e: React.ChangeEvent<HTMLInputElement>) => {
-        const { id , value , files } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [id]: files ? files[0] : value,
-        }))
+  const handleSubmit = async (e: React.FormEvent) => {
 
+    e.preventDefault();
+
+    const formDataToSend = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      formDataToSend.append(key, value);
+    });
+    // console.log([...formData.entries()]);
+
+
+    try {
+      const response = await fetch('/api/banner', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+
+      if (response.ok) {
+        console.log('Banner created successfully');
+      } else {
+        console.error('Failed to create banner');
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
-
-    const handleSubmit = async ( e: React.FormEvent ) => {
-
-        e.preventDefault();
-
-        const formDataToSend = new FormData();
-        Object.entries(formData).forEach(([key , value]) => {
-            formDataToSend.append(key , value);
-        })
-
-        try {
-            const response = await fetch('/api/banner', {
-              method: 'POST',
-              body: formDataToSend,
-            });
-      
-            if (response.ok) {
-              console.log('Banner created successfully');
-            } else {
-              console.error('Failed to create banner');
-            }
-          } catch (error) {
-            console.error('Error:', error);
-          }
-
-    }
+  };
 
   return (
     <div>
@@ -86,33 +77,37 @@ function DialogBox() {
               All the fields are required. Click save when you are done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {formFields.map((field) => (
-              <div key={field.id} className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor={field.id} className="text-right">
-                  {field.label}
-                </Label>
-                {field.type === 'file' ? (
-                  <input
-                    id={field.id}
-                    type={field.type}
-                    accept={field.accept}
-                    className="col-span-3"
-                  />
-                ) : (
-                  <Input
-                    id={field.id}
-                    type={field.type}
-                    defaultValue={field.defaultValue}
-                    className="col-span-3"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <DialogFooter>
-            <Button type="submit">Create</Button>
-          </DialogFooter>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              {formFields.map((field) => (
+                <div key={field.id} className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor={field.id} className="text-right">
+                    {field.label}
+                  </Label>
+                  {field.type === 'file' ? (
+                    <input
+                      id={field.id}
+                      type={field.type}
+                      accept={field.accept}
+                      className="col-span-3"
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <Input
+                      id={field.id}
+                      type={field.type}
+                      defaultValue={field.defaultValue}
+                      className="col-span-3"
+                      onChange={handleChange}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+            <DialogFooter>
+              <Button type="submit">Create</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
