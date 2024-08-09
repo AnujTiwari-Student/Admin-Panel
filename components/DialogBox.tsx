@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,21 +11,35 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+  } from "@/components/ui/sheet"
+  
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import BannerTableContent from './BannerTableContent';
 
 const formFields = [
-  { id: "title", label: "Title", type: "text", defaultValue: "Rent" },
-  { id: "description", label: "Description", type: "text", defaultValue: "For rent a vehicle" },
-  { id: "image", label: "Select Image", type: "file", accept: "image/*" },
-  { id: "createdBy", label: "CreatedBy", type: "text", defaultValue: "User" },
-  { id: "userId", label: "UserId", type: "number", defaultValue: "12" },
-  { id: "companyId", label: "CompanyId", type: "number", defaultValue: "1234" },
-  { id: "modifiedBy", label: "ModifiedBy", type: "text", defaultValue: "Anuj" },
+  { id: "title", label: "Title", type: "text", placeholder: "Rent" , required: true },
+  { id: "description", label: "Description", type: "text", placeholder: "For rent a vehicle" , required: true },
+  { id: "image", label: "Select Image", type: "file", accept: "image/*" , required: true },
+  { id: "createdBy", label: "CreatedBy", type: "text", placeholder: "User" , required: true },
+  { id: "userId", label: "UserId", type: "number", placeholder: "12" , required: true },
+  { id: "companyId", label: "CompanyId", type: "number", placeholder: "1234" , },
+  { id: "modifiedBy", label: "ModifiedBy", type: "text", placeholder: "Anuj" , },
 ];
 
 function DialogBox() {
+
   const [formData, setFormData] = useState<Record<string, string | File>>({});
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+ 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value, files } = e.target;
@@ -35,9 +49,22 @@ function DialogBox() {
     }));
   };
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    formFields.forEach(field => {
+      if (field.required && !formData[field.id]) {
+        newErrors[field.id] = `${field.label} is required`;
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
 
     e.preventDefault();
+
+    if (!validateForm()) return;
 
     const formDataToSend = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
@@ -63,19 +90,19 @@ function DialogBox() {
 
   return (
     <div>
-      <Dialog>
-        <DialogTrigger asChild>
-          <button className="py-2 px-6 bg-blue-600 rounded-lg text-white">
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
+          <button onClick={() => setIsOpen(true)} className="py-2 px-6 bg-blue-600 rounded-lg text-white">
             Create Banner
           </button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Create Banner</DialogTitle>
-            <DialogDescription>
+        </SheetTrigger>
+        <SheetContent className="sm:max-w-[425px]">
+          <SheetHeader>
+            <SheetTitle>Create Banner</SheetTitle>
+            <SheetDescription>
               All the fields are required. Click save when you are done.
-            </DialogDescription>
-          </DialogHeader>
+            </SheetDescription>
+          </SheetHeader>
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               {formFields.map((field) => (
@@ -95,20 +122,21 @@ function DialogBox() {
                     <Input
                       id={field.id}
                       type={field.type}
-                      defaultValue={field.defaultValue}
+                      placeholder={field.placeholder}
                       className="col-span-3"
                       onChange={handleChange}
                     />
                   )}
+                  {errors[field.id] && <p className="text-red-500 col-span-4">{errors[field.id]}</p>}
                 </div>
               ))}
             </div>
-            <DialogFooter>
-              <Button type="submit">Create</Button>
-            </DialogFooter>
+            <div className='w-full flex justify-end'>
+                 <Button onClick={() => setIsOpen(false)} type="submit">Create</Button>
+            </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

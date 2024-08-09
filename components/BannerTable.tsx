@@ -1,7 +1,7 @@
 'use client';
 
 import { Download } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BannerTableContent from './BannerTableContent';
 import DialogBox from './DialogBox';
 
@@ -16,43 +16,54 @@ interface Banner {
   modifiedBy: string;
 }
 
-const data: Banner[] = [
-  {
-    id: 1,
-    title: 'Title',
-    description: 'Description',
-    imageUrl: 'https://res.cloudinary.com/depos9mqy/image/upload/v1723097244/MainAfter_azxi79.webp' ,
-    createdBy: 'Anuj',
-    userId: 1,
-    companyId: 1,
-    modifiedBy: '---',
-  },
-  {
-    id: 1,
-    title: 'Title',
-    description: 'Description',
-    imageUrl: 'https://res.cloudinary.com/depos9mqy/image/upload/v1723097244/MainAfter_azxi79.webp' ,
-    createdBy: 'Anuj',
-    userId: 1,
-    companyId: 1,
-    modifiedBy: '---',
-  },
-  // Add more rows as needed
-];
 
 const BannerTable: React.FC = () => {
 
+  const [banners, setBanners] = useState<any[]>([]);
+
+   
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const response = await fetch('/api/banner');
+        if (response.ok) {
+          const data = await response.json();
+          setBanners(data.data);
+        } else {
+          console.error('Failed to fetch banners');
+        }
+      } catch (error) {
+        console.error('Error fetching banners:', error);
+      }
+    };
+
+    fetchBanners();
+  }, []);
+
   const handleExport = (): void => {
     console.log("Export button clicked");
-    exportToCSV(data, 'banners.csv');
+    exportToCSV(banners, 'banners.csv');
   };
 
 
-  const exportToCSV = (data: Banner[], filename: string): void => {
-    const csvData = data.map((row) =>
-      [row.title, row.description, row.imageUrl, row.createdBy, row.userId, row.companyId, row.modifiedBy].join(',')
-    );
-    const csvContent = `data:text/csv;charset=utf-8,${csvData.join('\n')}`;
+  const exportToCSV = (banners: Banner[], filename: string): void => {
+    const csvHeader = ['Title', 'Description', 'Image URL', 'Created By', 'User ID', 'Company ID', 'Modified By'];
+    const csvRows = [
+      csvHeader.join(','),
+      ...banners.map((row) =>
+        [
+          `"${row.title}"`,
+          `"${row.description}"`,
+          `"${row.imageUrl}"`, 
+          `"${row.createdBy}"`,
+          row.userId,
+          row.companyId,
+          `"${row.modifiedBy}"`
+        ].join(',')
+      )
+    ];
+    const csvContent = `data:text/csv;charset=utf-8,${csvRows.join('\n')}`;
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
@@ -79,7 +90,7 @@ const BannerTable: React.FC = () => {
         </div>
       </div>
       <div className="my-10 border border-gray-300">
-        <BannerTableContent data={data} />
+        <BannerTableContent data={banners} />
       </div>
     </div>
   );

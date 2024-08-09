@@ -98,3 +98,59 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: 'Failed to create banner', error }, { status: 500 });
   }
 }
+
+
+export async function PUT(request: Request) {
+  try {
+    const data = await request.json();
+    console.log('Received data:', data);
+
+    const { BannerId, Title, Description, Image, ModifiedBy, ModifiedOn } = data;
+
+    if (!BannerId) {
+      return NextResponse.json({ statusid: 0, statusmessage: 'Missing BannerId parameter' }, { status: 400 });
+    }
+
+    const result = await callStoredProcedure(
+      'sp_admin_update_banner',
+      { BannerId, Title, Description, Image, ModifiedBy, ModifiedOn },
+      ['StatusID', 'StatusMessage', 'TotalCount']
+    );
+
+    if (result.statusid === 1) {
+      return NextResponse.json({ statusid: result.statusid, statusmessage: result.statusmessage }, { status: 200 });
+    } else {
+      return NextResponse.json({ statusid: result.statusid, statusmessage: result.statusmessage }, { status: 400 });
+    }
+  } catch (error) {
+    console.error('Error updating banner:', error);
+    return NextResponse.json({ statusid: 0, statusmessage: 'Error updating banner' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request : Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const bannerId = searchParams.get('bannerId')
+
+    console.log('Extracted bannerId:', bannerId);
+    
+    if (bannerId) {
+      const result = await callStoredProcedure('sp_admin_delete_banner', { BannerId: parseInt(bannerId, 10) }, ['StatusID', 'StatusMessage' , 'TotalCount'])
+      
+      console.log('Stored procedure result:', result);
+
+      if (result.statusid === 1) {
+        return NextResponse.json({ statusid: result.statusid, statusmessage: result.statusmessage }, { status: 200 })
+      } else {
+        return NextResponse.json({ statusid: result.statusid, statusmessage: result.statusmessage }, { status: 400 })
+      }
+    } else {
+      return NextResponse.json({ statusid: 0, statusmessage: 'Missing ID parameter' }, { status: 400 })
+    }
+  } catch (error) {
+    console.error('Error deleting banner:', error)
+
+    return NextResponse.json({ statusid: 0, statusmessage: 'Error deleting banner with given ID' }, { status: 500 })
+  }
+}
