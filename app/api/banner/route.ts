@@ -1,8 +1,34 @@
 import { NextResponse } from 'next/server';
 import cloudinary from '../utils/cloudinary';
-import { query } from '../utils/db';
 import { Readable } from 'stream';
 import sql from 'mssql';
+import { callStoredProcedure } from '../../db'
+
+export async function GET() {
+  try {
+    const result = await callStoredProcedure(
+      'sp_sp_admin_get_banner',
+      [],
+      ['StatusID', 'StatusMessage', 'TotalCount']
+    )
+    if (result.statusid === 1) {
+      return NextResponse.json(
+        {
+          statusid: result.statusid,
+          statusmessage: result.statusmessage,
+          totalcount: result.totalcount,
+          cut: result.data
+        },
+        { status: 200 }
+      )
+    } else {
+      return NextResponse.json({ statusid: result.statusid, statusmessage: result.statusmessage }, { status: 400 })
+    }
+  } catch (error) {
+    console.error('Error fetching banner:', error)
+    return NextResponse.json({ statusid: 0, statusmessage: 'Error fetching banner' }, { status: 500 })
+  }
+}
 
 export async function POST(req: Request) {
   try {
@@ -37,43 +63,25 @@ export async function POST(req: Request) {
       throw new Error('Image upload failed');
     }
 
-    const imageUrl = uploadResponse.secure_url;
-    console.log('Image URL:', imageUrl);
+    const Image = uploadResponse.secure_url;
+    console.log('Image URL:', Image);
 
-    const title = formData.get('title') as string;
-    const description = formData.get('description') as string;
-    const createdBy = formData.get('createdBy') as string;
-    const userId = formData.get('userId') as string;
-    const companyId = formData.get('companyId') as string;
-    const modifiedBy = formData.get('modifiedBy') as string;
+    const Title = formData.get('title') as string;
+    const Description = formData.get('description') as string;
+    const UserId = 1;
+    const CompanyId = 1;
+    const id=0;
 
-    const insertQuery = `
-      INSERT INTO Banners (Title, Description, Image, CreatedBy, UserId, CompanyId, ModifiedBy)
-      VALUES (@title, @description, @image, @createdBy, @userId, @companyId, @modifiedBy);
-    `;
 
-    const parameters = {
-      title: { type: sql.NVarChar, value: title },
-      description: { type: sql.NVarChar, value: description },
-      image: { type: sql.NVarChar, value: imageUrl },
-      createdBy: { type: sql.NVarChar, value: createdBy },
-      userId: { type: sql.NVarChar, value: userId },
-      companyId: { type: sql.NVarChar, value: companyId },
-      modifiedBy: { type: sql.NVarChar, value: modifiedBy }
-    };
+    const result = await callStoredProcedure('sp_admin_add_update_banner', { id, Title, Description , Image , UserId , CompanyId}, [
+      'StatusID',
+      'StatusMessage'
+    ])
 
-    const result = await query(insertQuery, parameters);
-
-    console.log('Database insert result:', result);
-
-    if (result && result.recordset && result.recordset.length > 0) {
-      return NextResponse.json({
-        message: 'Banner created successfully',
-        imageUrl: imageUrl,
-        sqlStatus: 'Data inserted successfully',
-      });
+    if (result.statusid === 1) {
+      return NextResponse.json({ statusid: result.statusid, statusmessage: result.statusmessage }, { status: 200 })
     } else {
-      throw new Error('Data insertion failed');
+      return NextResponse.json({ statusid: result.statusid, statusmessage: result.statusmessage }, { status: 400 })
     }
   } catch (error) {
     console.error('Error:', error);
