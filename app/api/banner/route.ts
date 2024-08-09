@@ -6,27 +6,37 @@ import { callStoredProcedure } from '../../db'
 
 export async function GET() {
   try {
+    console.log("Attempting to call stored procedure...");
     const result = await callStoredProcedure(
-      'sp_sp_admin_get_banner',
+      'sp_admin_get_banner',
       [],
       ['StatusID', 'StatusMessage', 'TotalCount']
-    )
+    );
+    console.log("Stored procedure result:", result);
+
     if (result.statusid === 1) {
       return NextResponse.json(
         {
           statusid: result.statusid,
           statusmessage: result.statusmessage,
           totalcount: result.totalcount,
-          cut: result.data
+          data: result.data,
         },
         { status: 200 }
-      )
+      );
     } else {
-      return NextResponse.json({ statusid: result.statusid, statusmessage: result.statusmessage }, { status: 400 })
+      console.warn("Stored procedure returned an error:", result);
+      return NextResponse.json(
+        { statusid: result.statusid, statusmessage: result.statusmessage },
+        { status: 400 }
+      );
     }
   } catch (error) {
-    console.error('Error fetching banner:', error)
-    return NextResponse.json({ statusid: 0, statusmessage: 'Error fetching banner' }, { status: 500 })
+    console.error("Error fetching banner:", error);
+    return NextResponse.json(
+      { statusid: 0, statusmessage: "Error fetching banner" },
+      { status: 500 }
+    );
   }
 }
 
