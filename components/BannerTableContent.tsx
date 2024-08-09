@@ -23,6 +23,9 @@ type BannerTableContentProps = {
 };
 
 const BannerTableContent: React.FC<BannerTableContentProps> = ({ data }) => {
+
+  console.log("Data in BannerTableContent:", data);
+
   return (
     <div>
       <Table>

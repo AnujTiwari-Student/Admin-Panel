@@ -20,22 +20,42 @@ interface Banner {
 const BannerTable: React.FC = () => {
 
   const [banners, setBanners] = useState<any[]>([]);
+  const [isLoading , setIsLoading] = useState<boolean>(false)
 
    
 
   useEffect(() => {
+    
     const fetchBanners = async () => {
+      setIsLoading(true)
       try {
         const response = await fetch('/api/banner');
         if (response.ok) {
-          const data = await response.json();
-          setBanners(data.data);
+          const recievedData = await response.json();
+          console.log("Fetched data:", typeof(recievedData));
+          console.log("Fetched data:", recievedData);
+          const mappedData = recievedData.data.map((item: any) => ({
+            id: item.Id,
+            title: item.Title,
+            description: item.Description,
+            imageUrl: item.Image,
+            createdBy: item.CreatedBy,
+            userId: item.UserId,
+            companyId: item.CompanyId,
+            modifiedBy: item.ModifiedBy,
+          }));
+  
+          console.log(mappedData);         
+           setBanners(mappedData);
         } else {
           console.error('Failed to fetch banners');
         }
       } catch (error) {
         console.error('Error fetching banners:', error);
+      }finally {
+        setIsLoading(false)
       }
+
     };
 
     fetchBanners();
@@ -48,6 +68,9 @@ const BannerTable: React.FC = () => {
 
 
   const exportToCSV = (banners: Banner[], filename: string): void => {
+
+    console.log("Exporting data:", banners);
+
     const csvHeader = ['Title', 'Description', 'Image URL', 'Created By', 'User ID', 'Company ID', 'Modified By'];
     const csvRows = [
       csvHeader.join(','),
@@ -90,7 +113,7 @@ const BannerTable: React.FC = () => {
         </div>
       </div>
       <div className="my-10 border border-gray-300">
-        <BannerTableContent data={banners} />
+            <BannerTableContent data={banners} /> 
       </div>
     </div>
   );

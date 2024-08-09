@@ -100,7 +100,7 @@ function DialogBox() {
           <SheetHeader>
             <SheetTitle>Create Banner</SheetTitle>
             <SheetDescription>
-              All the fields are required. Click save when you are done.
+              All the fields are required. Click create when you are done.
             </SheetDescription>
           </SheetHeader>
           <form onSubmit={handleSubmit}>
