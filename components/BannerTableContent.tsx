@@ -8,6 +8,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import Image from 'next/image';
+import { Pencil, Trash } from 'lucide-react';
 
 type BannerTableContentProps = {
   data: {
@@ -58,6 +59,8 @@ const BannerTableContent: React.FC<BannerTableContentProps> = ({ data }) => {
               <TableCell className="text-right">{item.userId}</TableCell>
               <TableCell className="text-right">{item.companyId}</TableCell>
               <TableCell className="text-right">{item.modifiedBy}</TableCell>
+              {data? <TableCell className="text-right"><Trash  className='cursor-pointer'/></TableCell> : null}
+              {data? <TableCell className="text-right"><Pencil  className='cursor-pointer'/></TableCell> : null}
             </TableRow>
           ))}
         </TableBody>

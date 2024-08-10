@@ -4,6 +4,7 @@ import { Download } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import BannerTableContent from './BannerTableContent';
 import DialogBox from './DialogBox';
+import axios from 'axios'
 
 interface Banner {
   id: number;
@@ -14,52 +15,76 @@ interface Banner {
   userId: number;
   companyId: number;
   modifiedBy: string;
+  bannerId: string;
 }
 
 
 const BannerTable: React.FC = () => {
 
-  const [banners, setBanners] = useState<any[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [isLoading , setIsLoading] = useState<boolean>(false)
+  const [bannerToDelete, setBannerToDelete] = useState<number | null>(null)
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState<boolean>(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
 
    
 
-  useEffect(() => {
-    
-    const fetchBanners = async () => {
-      setIsLoading(true)
-      try {
-        const response = await fetch('/api/banner');
-        if (response.ok) {
-          const recievedData = await response.json();
-          console.log("Fetched data:", typeof(recievedData));
-          console.log("Fetched data:", recievedData);
-          const mappedData = recievedData.data.map((item: any) => ({
-            id: item.Id,
-            title: item.Title,
-            description: item.Description,
-            imageUrl: item.Image,
-            createdBy: item.CreatedBy,
-            userId: item.UserId,
-            companyId: item.CompanyId,
-            modifiedBy: item.ModifiedBy,
-          }));
-  
-          console.log(mappedData);         
-           setBanners(mappedData);
-        } else {
-          console.error('Failed to fetch banners');
-        }
-      } catch (error) {
-        console.error('Error fetching banners:', error);
-      }finally {
-        setIsLoading(false)
+  const fetchBanners = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/banner');
+      if (response.ok) {
+        const receivedData = await response.json();
+        console.log("Fetched data:", receivedData);
+        console.log("Fetched data (type):", typeof(receivedData));
+        const mappedData = receivedData.data.map((item: any) => ({
+          id: item.Id,
+          title: item.Title,
+          description: item.Description,
+          imageUrl: item.Image,
+          createdBy: item.CreatedBy,
+          userId: item.UserId,
+          companyId: item.CompanyId,
+          modifiedBy: item.ModifiedBy,
+        }));
+        console.log(mappedData);
+        setBanners(mappedData);
+      } else {
+        console.error('Failed to fetch banners');
       }
+    } catch (error) {
+      console.error('Error fetching banners:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    };
-
+  useEffect(() => {
     fetchBanners();
   }, []);
+
+  const handleDelete = (bannerId: number): void => {
+    setBannerToDelete(bannerId);
+    setDeleteConfirmationOpen(true);
+  };
+
+  const handleConfirmDelete = async (): Promise<void> => {
+    setIsDeleting(true);
+    try {
+      if (bannerToDelete) {
+        const response = await axios.delete(`/api/banner?bannerId=${bannerToDelete}`);
+        if (response.data.statusid === 1) {
+          await fetchBanners();
+          setBannerToDelete(null);
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting banner:', error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirmationOpen(false);
+    }
+  };
 
   const handleExport = (): void => {
     console.log("Export button clicked");

@@ -19,10 +19,13 @@ import {
     SheetTitle,
     SheetTrigger,
   } from "@/components/ui/sheet"
+  import { useToast } from "@/components/ui/use-toast"
   
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import BannerTableContent from './BannerTableContent';
+import { ToastAction } from './ui/toast';
+
 
 const formFields = [
   { id: "title", label: "Title", type: "text", placeholder: "Rent" , required: true },
@@ -39,6 +42,18 @@ function DialogBox() {
   const [formData, setFormData] = useState<Record<string, string | File>>({});
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { toast } = useToast()
+
+  const handleClick = ()=>{
+    setIsOpen(false);
+    toast({
+      title: " Banner Created ",
+      description: new Date().toLocaleString(),
+      action: (
+        <ToastAction altText="Done creating banner">Done</ToastAction>
+      ),
+    })
+  }
  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -132,7 +147,7 @@ function DialogBox() {
               ))}
             </div>
             <div className='w-full flex justify-end'>
-                 <Button onClick={() => setIsOpen(false)} type="submit">Create</Button>
+                 <Button onClick={handleClick} type="submit">Create</Button>
             </div>
           </form>
         </SheetContent>
