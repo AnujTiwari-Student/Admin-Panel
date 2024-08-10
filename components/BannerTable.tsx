@@ -24,9 +24,7 @@ const BannerTable: React.FC = () => {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [isLoading , setIsLoading] = useState<boolean>(false)
   const [bannerToDelete, setBannerToDelete] = useState<number | null>(null)
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState<boolean>(false)
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
-
    
 
   const fetchBanners = async () => {
@@ -63,28 +61,26 @@ const BannerTable: React.FC = () => {
     fetchBanners();
   }, []);
 
-  const handleDelete = (bannerId: number): void => {
-    setBannerToDelete(bannerId);
-    setDeleteConfirmationOpen(true);
-  };
 
-  const handleConfirmDelete = async (): Promise<void> => {
+  const handleConfirmationDelete = async (bannerId: number): Promise<void> => {
     setIsDeleting(true);
     try {
-      if (bannerToDelete) {
-        const response = await axios.delete(`/api/banner?bannerId=${bannerToDelete}`);
-        if (response.data.statusid === 1) {
-          await fetchBanners();
-          setBannerToDelete(null);
-        }
+      console.log(`Attempting to delete banner with ID: ${bannerId}`);
+      const response = await axios.delete(`/api/banner?bannerId=${bannerId}`);
+      console.log('Delete response:', response.data);
+      if (response.data.statusid === 1) {
+        await fetchBanners(); 
+        setBannerToDelete(null);
+      } else {
+        console.error('Failed to delete banner:', response.data);
       }
     } catch (error) {
       console.error('Error deleting banner:', error);
     } finally {
       setIsDeleting(false);
-      setDeleteConfirmationOpen(false);
     }
   };
+  
 
   const handleExport = (): void => {
     console.log("Export button clicked");
@@ -134,11 +130,11 @@ const BannerTable: React.FC = () => {
             placeholder="Search Banner"
             className="hidden xl:block py-2 px-12 rounded-lg shadow-xl"
           />
-          <DialogBox />
+          <DialogBox fetchBanners={fetchBanners} />
         </div>
       </div>
       <div className="my-10 border border-gray-300">
-            <BannerTableContent data={banners} /> 
+            <BannerTableContent data={banners} onDelete={handleConfirmationDelete} /> 
       </div>
     </div>
   );

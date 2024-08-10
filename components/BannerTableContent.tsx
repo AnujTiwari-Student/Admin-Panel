@@ -1,4 +1,6 @@
-import React from 'react';
+'use client'
+
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -9,6 +11,8 @@ import {
 } from "@/components/ui/table";
 import Image from 'next/image';
 import { Pencil, Trash } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
+import { Button } from './ui/button';
 
 type BannerTableContentProps = {
   data: {
@@ -21,9 +25,25 @@ type BannerTableContentProps = {
     companyId: number;
     modifiedBy: string;
   }[];
+  onDelete?: (id: number) => void;
 };
 
-const BannerTableContent: React.FC<BannerTableContentProps> = ({ data }) => {
+const BannerTableContent: React.FC<BannerTableContentProps> = ({ data , onDelete }) => {
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedBannerId, setSelectedBannerId] = useState<number | null>(null);
+
+  const handleTrashClick = (id: number) => {
+    setSelectedBannerId(id);
+    setIsDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedBannerId !== null && onDelete) {
+      onDelete(selectedBannerId);
+    }
+    setIsDialogOpen(false);
+  };
 
   console.log("Data in BannerTableContent:", data);
 
@@ -59,12 +79,29 @@ const BannerTableContent: React.FC<BannerTableContentProps> = ({ data }) => {
               <TableCell className="text-right">{item.userId}</TableCell>
               <TableCell className="text-right">{item.companyId}</TableCell>
               <TableCell className="text-right">{item.modifiedBy}</TableCell>
-              {data? <TableCell className="text-right"><Trash  className='cursor-pointer'/></TableCell> : null}
+              {data? <TableCell className="text-right"><Trash onClick={() => handleTrashClick(item.id)} className='cursor-pointer'/></TableCell> : null}
               {data? <TableCell className="text-right"><Pencil  className='cursor-pointer'/></TableCell> : null}
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this banner?</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

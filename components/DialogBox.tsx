@@ -25,6 +25,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import BannerTableContent from './BannerTableContent';
 import { ToastAction } from './ui/toast';
+import axios from 'axios';
+
+type DialogBoxProps = {
+  fetchBanners: () => void; 
+};
 
 
 const formFields = [
@@ -37,15 +42,18 @@ const formFields = [
   { id: "modifiedBy", label: "ModifiedBy", type: "text", placeholder: "Anuj" , },
 ];
 
-function DialogBox() {
+const DialogBox: React.FC<DialogBoxProps> = ({ fetchBanners }) => {
 
   const [formData, setFormData] = useState<Record<string, string | File>>({});
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { toast } = useToast()
 
+  
+
   const handleClick = ()=>{
     setIsOpen(false);
+    fetchBanners()
     toast({
       title: " Banner Created ",
       description: new Date().toLocaleString(),
