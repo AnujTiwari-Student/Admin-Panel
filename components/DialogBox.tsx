@@ -36,7 +36,7 @@ const formFields = [
   { id: "title", label: "Title", type: "text", placeholder: "Rent" , required: true },
   { id: "description", label: "Description", type: "text", placeholder: "For rent a vehicle" , required: true },
   { id: "image", label: "Select Image", type: "file", accept: "image/*" , required: true },
-  { id: "createdBy", label: "CreatedBy", type: "text", placeholder: "User" , required: true },
+  { id: "createdBy", label: "CreatedBy", type: "text", placeholder: "CreatedBy" , required: true },
   { id: "userId", label: "UserId", type: "number", placeholder: "12" , required: true },
   { id: "companyId", label: "CompanyId", type: "number", placeholder: "1234" , },
   { id: "modifiedBy", label: "ModifiedBy", type: "text", placeholder: "Anuj" , },

@@ -46,6 +46,7 @@ export async function POST(req: Request) {
     console.log('FormData entries:', [...formData.entries()]);
 
     const imageFile = formData.get('image') as File;
+
     if (!imageFile) {
       throw new Error('No file selected');
     }
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
 
     const uploadResponse = await new Promise<any>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'banners' },
+        { folder: 'banners' , upload_preset: "ml_default" },
         (error, result) => {
           if (error) {
             console.error('Cloudinary upload error:', error);
@@ -76,15 +77,16 @@ export async function POST(req: Request) {
     const Image = uploadResponse.secure_url;
     console.log('Image URL:', Image);
 
+    
+    
     const Title = formData.get('title') as string;
     const Description = formData.get('description') as string;
-    // const CreatedBy = formData.get('createdBy') as string
     const UserId = 1;
     const CompanyId = 1;
     const id=0;
 
 
-    const result = await callStoredProcedure('sp_admin_add_update_banner', { id, Title, Description , Image , UserId , CompanyId  }, [
+    const result = await callStoredProcedure('sp_admin_add_update_banner', { id, Title, Description , Image , UserId , CompanyId }, [
       'StatusID',
       'StatusMessage'
     ])
@@ -107,8 +109,6 @@ export async function PUT(request: Request) {
     console.log('Received data:', data);
 
     const { BannerId, Title, Description, Image, ModifiedBy, ModifiedOn } = data;
-
-    console.log('Received data for update:', data);
 
     if (!BannerId) {
       return NextResponse.json({ statusid: 0, statusmessage: 'Missing BannerId parameter' }, { status: 400 });

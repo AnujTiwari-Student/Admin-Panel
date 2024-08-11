@@ -30,25 +30,36 @@ const EditBannerModal: React.FC<EditBannerModalProps> = ({ banner, onClose, onSa
   }, [banner]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+        if (e.target.files && e.target.files[0]) {
+      console.log(e.target.files[0]);
       setFile(e.target.files[0]);
-      console.log("File selected:", e.target.files[0]);
     }
   };
 
+
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
+    console.log(file.name);
+    
     formData.append('file', file);
-    formData.append('upload_preset', 'Admin Panel'); 
+    formData.append('upload_preset', 'ml_default'); 
+
+    
 
     const response = await axios.post('https://api.cloudinary.com/v1_1/depos9mqy/image/upload', formData);
     console.log("Image uploaded successfully:", response.data.secure_url);
     return response.data.secure_url; 
+    
   };
+
+  
 
   const handleSave = async () => {
 
+
     let updatedImageUrl = imageUrl;
+    console.log(updatedImageUrl);
+    
 
     if (file) {
       console.log("Uploading image...");
