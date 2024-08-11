@@ -2,7 +2,6 @@
 
 import { Download } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import BannerTableContent from './BannerTableContent';
 import DialogBox from './DialogBox';
 import axios from 'axios'
 import EditBannerModal from './EditBannerModal';
@@ -66,6 +65,7 @@ const BannerTable: React.FC = () => {
         const receivedData = await response.json();
         console.log("Fetched data:", receivedData);
         console.log("Fetched data (type):", typeof(receivedData));
+  
         const mappedData = receivedData.data.map((item: any) => ({
           id: item.Id,
           title: item.Title,
@@ -158,14 +158,14 @@ const BannerTable: React.FC = () => {
         </div>
         <div className="space-x-4 lg:space-x-2 xl:space-x-4 flex">
           <input
+            type="text"
             placeholder="Search Banner"
-            className="hidden xl:block py-2 px-12 rounded-lg shadow-xl"
+            className="hidden xl:block py-2 px-6 rounded-lg shadow-xl"
           />
           <DialogBox fetchBanners={fetchBanners} />
         </div>
       </div>
       <div className="my-10 border border-gray-300">
-            {/* <BannerTableContent data={banners} onEdit={setBannerToEdit} onDelete={handleConfirmationDelete} />  */}
             <SolitaireTable data={banners} onEdit={setBannerToEdit} onDelete={handleConfirmationDelete} />
       </div>
       {bannerToEdit && (

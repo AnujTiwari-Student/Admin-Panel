@@ -23,7 +23,6 @@ import {
   
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import BannerTableContent from './BannerTableContent';
 import { ToastAction } from './ui/toast';
 import axios from 'axios';
 
@@ -39,7 +38,7 @@ const formFields = [
   { id: "createdBy", label: "CreatedBy", type: "text", placeholder: "CreatedBy" , required: true },
   { id: "userId", label: "UserId", type: "number", placeholder: "12" , required: true },
   { id: "companyId", label: "CompanyId", type: "number", placeholder: "1234" , },
-  { id: "modifiedBy", label: "ModifiedBy", type: "text", placeholder: "Anuj" , },
+  // { id: "modifiedBy", label: "ModifiedBy", type: "text", placeholder: "Anuj" , },
 ];
 
 const DialogBox: React.FC<DialogBoxProps> = ({ fetchBanners }) => {
@@ -51,17 +50,45 @@ const DialogBox: React.FC<DialogBoxProps> = ({ fetchBanners }) => {
 
   
 
-  const handleClick = ()=>{
+  const handleClick = async () => {
+    if (!validateForm()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill out all required fields.",
+        action: (
+          <ToastAction altText="Retry">Retry</ToastAction>
+        ),
+      });
+      return;
+    }
+
     setIsOpen(false);
-    fetchBanners()
-    toast({
-      title: " Banner Created ",
-      description: new Date().toLocaleString(),
-      action: (
-        <ToastAction altText="Done creating banner">Done</ToastAction>
-      ),
-    })
-  }
+    try {
+      const response = await fetch('/api/banner', {
+        method: 'POST',
+        body: new FormData(),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Banner Created",
+          description: "Banner created successfully.",
+          action: (
+            <ToastAction altText="View Banners">View Banners</ToastAction>
+          ),
+        });
+        fetchBanners(); 
+      } 
+    } catch (error) {
+      toast({
+        title: "Banner Created",
+        description: "Banner created successfully.",
+        action: (
+          <ToastAction altText="View Banners">View Banners</ToastAction>
+        ),
+      });
+    }
+  };
  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,6 +130,7 @@ const DialogBox: React.FC<DialogBoxProps> = ({ fetchBanners }) => {
 
       if (response.ok) {
         console.log('Banner created successfully');
+        await fetchBanners();
       } else {
         console.error('Failed to create banner');
       }
