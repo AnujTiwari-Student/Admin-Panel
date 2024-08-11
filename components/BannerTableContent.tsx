@@ -13,6 +13,8 @@ import Image from 'next/image';
 import { Pencil, Trash } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
+import axios from 'axios';
+import { Input } from './ui/input';
 
 type BannerTableContentProps = {
   data: {
@@ -26,12 +28,19 @@ type BannerTableContentProps = {
     modifiedBy: string;
   }[];
   onDelete?: (id: number) => void;
+  onEdit?: (banner: any) => void;
 };
 
-const BannerTableContent: React.FC<BannerTableContentProps> = ({ data , onDelete }) => {
+const BannerTableContent: React.FC<BannerTableContentProps> = ({ data , onDelete , onEdit }) => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedBannerId, setSelectedBannerId] = useState<number | null>(null);
+
+  const handleEditClick = (banner: any) => {
+    if (onEdit) {
+      onEdit(banner);
+    }
+  };
 
   const handleTrashClick = (id: number) => {
     setSelectedBannerId(id);
@@ -80,7 +89,7 @@ const BannerTableContent: React.FC<BannerTableContentProps> = ({ data , onDelete
               <TableCell className="text-right">{item.companyId}</TableCell>
               <TableCell className="text-right">{item.modifiedBy}</TableCell>
               {data? <TableCell className="text-right"><Trash onClick={() => handleTrashClick(item.id)} className='cursor-pointer'/></TableCell> : null}
-              {data? <TableCell className="text-right"><Pencil  className='cursor-pointer'/></TableCell> : null}
+              {data? <TableCell className="text-right"><Pencil onClick={()=> handleEditClick(item)}  className='cursor-pointer'/></TableCell> : null}
             </TableRow>
           ))}
         </TableBody>
@@ -102,6 +111,7 @@ const BannerTableContent: React.FC<BannerTableContentProps> = ({ data , onDelete
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
     </div>
   );
 };

@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react';
 import BannerTableContent from './BannerTableContent';
 import DialogBox from './DialogBox';
 import axios from 'axios'
+import EditBannerModal from './EditBannerModal';
+import SolitaireTable from './TableComponent';
 
 interface Banner {
   id: number;
@@ -25,6 +27,35 @@ const BannerTable: React.FC = () => {
   const [isLoading , setIsLoading] = useState<boolean>(false)
   const [bannerToDelete, setBannerToDelete] = useState<number | null>(null)
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
+  const [bannerToEdit, setBannerToEdit] = useState<Banner | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
+
+
+  const handleEditBanner = async (banner: Banner) => {
+    setIsEditing(true);
+    try {
+      const response = await axios.put('/api/banner', {
+        BannerId: banner.id,
+        Title: banner.title,
+        Description: banner.description,
+        Image: banner.imageUrl,
+        ModifiedBy: banner.modifiedBy,
+        ModifiedOn: new Date().toISOString()
+      });
+
+      if (response.data.statusid === 1) {
+        fetchBanners();
+        setBannerToEdit(null);
+      } else {
+        console.error(response.data.statusmessage);
+      }
+    } catch (error) {
+      console.error('Error updating banner:', error);
+    } finally {
+      setIsEditing(false);
+    }
+  };
    
 
   const fetchBanners = async () => {
@@ -134,8 +165,16 @@ const BannerTable: React.FC = () => {
         </div>
       </div>
       <div className="my-10 border border-gray-300">
-            <BannerTableContent data={banners} onDelete={handleConfirmationDelete} /> 
+            {/* <BannerTableContent data={banners} onEdit={setBannerToEdit} onDelete={handleConfirmationDelete} />  */}
+            <SolitaireTable data={banners} onEdit={setBannerToEdit} onDelete={handleConfirmationDelete} />
       </div>
+      {bannerToEdit && (
+        <EditBannerModal
+          banner={bannerToEdit}
+          onClose={() => setBannerToEdit(null)}
+          onSave={handleEditBanner}
+        />
+      )}
     </div>
   );
 };

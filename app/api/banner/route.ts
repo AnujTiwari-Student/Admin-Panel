@@ -78,12 +78,13 @@ export async function POST(req: Request) {
 
     const Title = formData.get('title') as string;
     const Description = formData.get('description') as string;
+    // const CreatedBy = formData.get('createdBy') as string
     const UserId = 1;
     const CompanyId = 1;
     const id=0;
 
 
-    const result = await callStoredProcedure('sp_admin_add_update_banner', { id, Title, Description , Image , UserId , CompanyId}, [
+    const result = await callStoredProcedure('sp_admin_add_update_banner', { id, Title, Description , Image , UserId , CompanyId  }, [
       'StatusID',
       'StatusMessage'
     ])
@@ -106,6 +107,8 @@ export async function PUT(request: Request) {
     console.log('Received data:', data);
 
     const { BannerId, Title, Description, Image, ModifiedBy, ModifiedOn } = data;
+
+    console.log('Received data for update:', data);
 
     if (!BannerId) {
       return NextResponse.json({ statusid: 0, statusmessage: 'Missing BannerId parameter' }, { status: 400 });
