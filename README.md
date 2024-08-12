@@ -2,6 +2,18 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ![Screenshot 2024-08-12 232009](https://github.com/user-attachments/assets/39bc122c-5663-409e-b90c-4cd989ba414d)
 
+Include your own .env.local file and give your keys there
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+
+DB_USER=
+DB_PASSWORD=
+DB_SERVER=
+DB_DATABASE=
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 
 ## Getting Started
 
