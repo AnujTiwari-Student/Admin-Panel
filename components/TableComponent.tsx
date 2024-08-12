@@ -53,19 +53,29 @@ const SolitaireTable: React.FC<SolitaireData> = ({data , onDelete , onEdit}) => 
     getTableBodyProps,
     headerGroups,
     prepareRow,
+    // @ts-ignore
     page,
+    // @ts-ignore
     canPreviousPage,
+    // @ts-ignore
     canNextPage,
+    // @ts-ignore
     pageOptions,
+    // @ts-ignore
     gotoPage,
+    // @ts-ignore
     nextPage,
+    // @ts-ignore
     previousPage,
+    // @ts-ignore
     setPageSize,
+    // @ts-ignore
     state: { pageIndex, pageSize },
   }: TableInstance<DataItem> = useTable(
     {
       columns,
       data,
+      // @ts-ignore
       initialState: { pageIndex: 0 }, // Set initial page index
     },
     usePagination
