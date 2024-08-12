@@ -13,8 +13,6 @@ import Image from 'next/image';
 import { Pencil, Trash } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
-import axios from 'axios';
-import { Input } from './ui/input';
 
 type BannerTableContentProps = {
   data: {
@@ -26,6 +24,7 @@ type BannerTableContentProps = {
     userId: number;
     companyId: number;
     modifiedBy: string;
+    bannerId: string;
   }[];
   onDelete?: (id: number) => void;
   onEdit?: (banner: any) => void;

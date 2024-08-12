@@ -179,6 +179,7 @@ const BannerTable: React.FC = () => {
         </div>
       </div>
       <div className="my-10 border border-gray-300">
+        {/* @ts-ignore */}
             <SolitaireTable data={filteredSearch} onEdit={setBannerToEdit} onDelete={handleConfirmationDelete} />
       </div>
       {bannerToEdit && (

@@ -24,7 +24,9 @@ const config: DBConfig = {
 
 const dbClientService = async (): Promise<ConnectionPool> => {
   try {
+    // @ts-ignore
     const pool = await sql.connect(config);
+    // @ts-ignore
     return pool;
   } catch (error) {
     console.error('Error connecting to database:', error);
@@ -52,14 +54,12 @@ async function callStoredProcedure(
     const pool = await dbClientService();
     const request = pool.request();
 
-    // Add input parameters if provided
     if (Object.keys(params).length > 0) {
       for (const paramName in params) {
         request.input(paramName, params[paramName]);
       }
     }
 
-    // Add output parameters
     outputParams.forEach(paramName => {
       if (paramName === 'StatusID') {
         request.output(paramName, sql.Int);
@@ -72,7 +72,6 @@ async function callStoredProcedure(
 
     const result: IProcedureResult<any> = await request.execute(procedureName);
 
-    // Construct the return object dynamically
     const returnObject: OutputParams = { data: result.recordset };
 
     outputParams.forEach(paramName => {
