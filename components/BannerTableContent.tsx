@@ -35,6 +35,7 @@ const BannerTableContent: React.FC<BannerTableContentProps> = ({ data , onDelete
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedBannerId, setSelectedBannerId] = useState<number | null>(null);
+  
 
   const handleEditClick = (banner: any) => {
     if (onEdit) {

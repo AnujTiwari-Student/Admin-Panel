@@ -1,7 +1,7 @@
 'use client';
 
 import { Download } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import DialogBox from './DialogBox';
 import axios from 'axios'
 import EditBannerModal from './EditBannerModal';
@@ -28,6 +28,17 @@ const BannerTable: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [bannerToEdit, setBannerToEdit] = useState<Banner | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [searchTerm , setSearchTerm] = useState<any>('')
+
+  const filteredSearch = useMemo(()=>{
+    if(!searchTerm){
+      return banners;
+    }
+    return banners.filter((banner)=>
+      banner.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      banner.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  },[searchTerm , banners])
 
 
 
@@ -160,13 +171,15 @@ const BannerTable: React.FC = () => {
           <input
             type="text"
             placeholder="Search Banner"
+            value={searchTerm}
             className="hidden xl:block py-2 px-6 rounded-lg shadow-xl"
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <DialogBox fetchBanners={fetchBanners} />
         </div>
       </div>
       <div className="my-10 border border-gray-300">
-            <SolitaireTable data={banners} onEdit={setBannerToEdit} onDelete={handleConfirmationDelete} />
+            <SolitaireTable data={filteredSearch} onEdit={setBannerToEdit} onDelete={handleConfirmationDelete} />
       </div>
       {bannerToEdit && (
         <EditBannerModal
