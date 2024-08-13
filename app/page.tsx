@@ -25,7 +25,7 @@ const AdminPage: React.FC = () => {
                 </div>
             </section>
 
-            <section className='lg:mx-64'>
+            <section className='lg:ml-64'>
                 <BannerTable/>
             </section>
 

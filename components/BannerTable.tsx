@@ -160,7 +160,7 @@ const BannerTable: React.FC = () => {
   };
 
   return (
-    <div className="mx-10 lg:w-full overflow-x-hidden">
+    <div className="mx-10 lg:w-auto overflow-x-hidden">
       <div className="flex justify-between">
         <div className="flex">
           <button className="flex bg-gray-300 px-6 py-2 rounded-lg" onClick={handleExport}>
@@ -178,7 +178,7 @@ const BannerTable: React.FC = () => {
           <DialogBox fetchBanners={fetchBanners} />
         </div>
       </div>
-      <div className="my-10 border border-gray-300">
+      <div className="my-10">
         {/* @ts-ignore */}
             <SolitaireTable data={filteredSearch} onEdit={setBannerToEdit} onDelete={handleConfirmationDelete} />
       </div>

@@ -7,6 +7,14 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import axios from 'axios';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
 type EditBannerModalProps = {
   banner: any;
@@ -81,11 +89,11 @@ const EditBannerModal: React.FC<EditBannerModalProps> = ({ banner, onClose, onSa
   };
 
   return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Banner</DialogTitle>
-        </DialogHeader>
+    <Sheet open onOpenChange={onClose}>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Edit Banner</SheetTitle>
+        </SheetHeader>
         <div className="space-y-4">
           <div>
             <Label htmlFor="title">Title</Label>
@@ -133,8 +141,8 @@ const EditBannerModal: React.FC<EditBannerModalProps> = ({ banner, onClose, onSa
           </Button>
           <Button onClick={handleSave}>Save</Button>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 

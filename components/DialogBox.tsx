@@ -3,15 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
     Sheet,
     SheetContent,
     SheetDescription,
@@ -33,12 +24,11 @@ type DialogBoxProps = {
 
 const formFields = [
   { id: "title", label: "Title", type: "text", placeholder: "Rent" , required: true },
-  { id: "description", label: "Description", type: "text", placeholder: "For rent a vehicle" , required: true },
+  { id: "description", label: "Description", type: "text", placeholder: "For rent a vehicle" },
   { id: "image", label: "Select Image", type: "file", accept: "image/*" , required: true },
   { id: "createdBy", label: "CreatedBy", type: "text", placeholder: "CreatedBy" , required: true },
   { id: "userId", label: "UserId", type: "number", placeholder: "12" , required: true },
   { id: "companyId", label: "CompanyId", type: "number", placeholder: "1234" , },
-  // { id: "modifiedBy", label: "ModifiedBy", type: "text", placeholder: "Anuj" , },
 ];
 
 const DialogBox: React.FC<DialogBoxProps> = ({ fetchBanners }) => {
@@ -51,6 +41,7 @@ const DialogBox: React.FC<DialogBoxProps> = ({ fetchBanners }) => {
   
 
   const handleClick = async () => {
+
     if (!validateForm()) {
       toast({
         title: "Validation Error",
@@ -63,7 +54,17 @@ const DialogBox: React.FC<DialogBoxProps> = ({ fetchBanners }) => {
     }
 
     setIsOpen(false);
+
     try {
+
+      const formElement = document.querySelector('formData') as HTMLFormElement; 
+
+      if (!formElement) {
+        throw new Error("Form element not found");
+      }
+
+      const formData = new FormData(formElement);
+
       const response = await fetch('/api/banner', {
         method: 'POST',
         body: new FormData(),
@@ -77,6 +78,9 @@ const DialogBox: React.FC<DialogBoxProps> = ({ fetchBanners }) => {
             <ToastAction altText="View Banners">View Banners</ToastAction>
           ),
         });
+
+        formElement.reset();
+
         fetchBanners(); 
       } 
     } catch (error) {
